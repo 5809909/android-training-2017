@@ -11,20 +11,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.io.InputStream;
 
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(
@@ -69,22 +65,22 @@ public class UserParserTest {
     @Test
     public void parseUserListFromResource() throws Exception {
         InputStream mockedInputStream = Mocks.stream("user/user_list.json");
-//        mHttpClient.request(anyString(), mResponseListenerArgumentCaptor.capture());
-        mResponseListenerArgumentCaptor.getValue().onError(new Exception());
+        ArgumentCaptor argCap = ArgumentCaptor.forClass(HttpClient.ResponseListener.class);
+        mHttpClient.request(anyString(), (HttpClient.ResponseListener) argCap.capture());
 
-//        final UsersListParserFactory usersListParserFactory = new UsersListParserFactory();
-//        final IUsersList userList = usersListParserFactory.createParser(response).parse();
-//        assertTrue(userList.getUsersList().size() == 2);
-//        assertTrue(userList.getUsersList().get(0).getId() == 1);
-//        assertEquals(userList.getUsersList().get(0).getName(), "First Name and Last Name");
-//
-//
-//        InputStream mockedInputStreamWithObject = Mocks.stream("user/user_list_with_root_object.json");
-//        when(mHttpClient.request(anyString())).thenReturn(mockedInputStreamWithObject);
-//        InputStream responseWithObject = mHttpClient.request("http://myBackend/getUserListWithObject");
-//
-//        final IUsersList userListWithObject = usersListParserFactory.createParserForResponceWithObject(responseWithObject).parse();
-//        assertTrue(userListWithObject.getUsersList().size() == 2);
+
+        final UsersListParserFactory usersListParserFactory = new UsersListParserFactory();
+        final IUsersList userList = usersListParserFactory.createParser(mockedInputStream).parse();
+        assertTrue(userList.getUsersList().size() == 2);
+        assertTrue(userList.getUsersList().get(0).getId() == 1);
+        assertEquals(userList.getUsersList().get(0).getName(), "First Name and Last Name");
+
+
+        InputStream mockedInputStreamWithObject = Mocks.stream("user/user_list_with_root_object.json");
+        mHttpClient.request(anyString(),(HttpClient.ResponseListener) argCap.capture());
+
+        final IUsersList userListWithObject = usersListParserFactory.createParserForResponceWithObject(mockedInputStreamWithObject).parse();
+        assertTrue(userListWithObject.getUsersList().size() == 2);
 
     }
 
